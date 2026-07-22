@@ -11,8 +11,8 @@ import webbrowser
 from tkinter import Menu
 
 # --- APP INFO & UPDATER ---
-# Updated to v1.1.0 due to new features (Update checker & UI fixes)
-CURRENT_VERSION = "v1.1.0" 
+# Updated to v1.1.2: Core Engine Updated
+CURRENT_VERSION = "v1.1.2" 
 REPO_API_URL = "https://api.github.com/repos/airdenmark/ffmpeg-Video-Downloader/releases/latest"
 RELEASES_URL = "https://github.com/airdenmark/ffmpeg-Video-Downloader/releases/latest"
 
