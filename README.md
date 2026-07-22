@@ -21,21 +21,21 @@ A powerful, standalone GUI-based video downloader powered by `yt-dlp` and `ffmpe
 
 ## 📦 Installation & Usage
 1. Go to the [Latest Release](https://github.com/airdenmark/ffmpeg-Video-Downloader/releases/latest).
-2. Download the `.zip` file (e.g., `ffmpeg.Video.Downloader.v1.1.1.zip`).
+2. Download the `.zip` file (e.g., `ffmpeg.Video.Downloader.v1.1.2.zip`).
 3. Extract the contents to a folder of your choice.
 4. **Pro Tip:** Right-click the `.exe` file, select **Properties**, check the **Unblock** box at the bottom, and click **OK**. This prevents Windows from asking for permission every time you run the app.
 5. Run the `.exe` file to start downloading!
 
 > [!IMPORTANT]
 > **Note on Windows SmartScreen:**
-> Because this is a new, independent application, Windows may show a warning. If you haven't "unblocked" the file as described above, click **"More info"** and then **"Run anyway"**.
+> Because this is a new, independent application, Windows may show a warning. If you haven't "unblocked" the file as described above, click **"More info"** and then **"Run anyway"**
 
 ## ⚙️ Technical Specifications & Core Components
 This application is compiled using the latest stable libraries to ensure maximum compatibility and speed.
 
 | Component | Version | Link |
 | :--- | :--- | :--- |
-| **yt-dlp** | 2026.3.17.0 | [View Project](https://github.com/yt-dlp/yt-dlp) |
-| **FFmpeg** | 2026-04-16-git-5abc240a27 | [gyan.dev Builds](https://www.gyan.dev/ffmpeg/builds/) |
+| **yt-dlp** | 2026.07.04 | [View Project](https://github.com/yt-dlp/yt-dlp) |
+| **FFmpeg** | 2026-07-20-git-c23123630e | [gyan.dev Builds](https://www.gyan.dev/ffmpeg/builds/) |
 | **Python** | 3.13 | [View Project](https://www.python.org/) |
-| **CustomTkinter** | v5.2.2 | [View Project](https://github.com/TomSchimansky/CustomTkinter) |
+| **CustomTkinter** | v6.0.0 | [View Project](https://github.com/TomSchimansky/CustomTkinter) |
