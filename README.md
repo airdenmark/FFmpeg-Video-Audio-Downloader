@@ -7,7 +7,7 @@ A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpe
 * **Dark Mode UI:** A clean, modern interface built with CustomTkinter.
 * **Flexible Audio & Video Formats:** 
   * **MP4 Video:** Full quality with auto-merged streams.
-  * **M4A Audio:** Direct, lossless native AAC extraction.
+  * **M4A Audio:** Direct, native AAC audio stream extraction
   * **MP3 Audio:** High-quality 320kbps conversion via FFmpeg.
   * **Opus Audio:** Direct raw WebM stream extraction.
 * **Advanced Subtitles:** Automatically embeds subtitles into MP4 files and generates a separate `.srt` file for external use.
@@ -16,11 +16,11 @@ A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpe
 
 ## ⚖️ Comparison: Standalone vs. Extensions
 
-| Feature | Browser Extensions | ffmpeg Downloader |
+| Feature | Browser Extensions | FFmpeg Video & Audio Downloader |
 | :--- | :--- | :--- |
 | **Privacy** | Can track browsing history | **100% Private / Local** |
 | **FFmpeg Processing** | Usually requires extra install | **Fully Bundled** |
-| **Audio Extraction** | Often paywalled or low bitrate | **Lossless Native & 320k MP3** |
+| **Audio Extraction** | Often paywalled or low bitrate | **Native AAC & 320k MP3** |
 | **Subtitle Files** | Often hardcoded or ignored | **Embedded + Separate .srt** |
 | **Speed/Limits** | Often restricted for free users | **Unlimited & Free** |
 | **Site Support** | Varies by extension | **1000+ Sites (yt-dlp)** |
