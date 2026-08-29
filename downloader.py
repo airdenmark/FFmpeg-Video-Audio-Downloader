@@ -11,16 +11,14 @@ import webbrowser
 from tkinter import Menu
 
 # --- APP INFO & UPDATER ---
-# The current version code for the application
-CURRENT_VERSION = "v1.1.2" 
-REPO_API_URL = "https://api.github.com/repos/airdenmark/ffmpeg-Video-Downloader/releases/latest"
-RELEASES_URL = "https://github.com/airdenmark/ffmpeg-Video-Downloader/releases/latest"
+CURRENT_VERSION = "v1.2.0"
+REPO_API_URL = "https://api.github.com/repos/airdenmark/FFmpeg-Video-Audio-Downloader/releases/latest"
+RELEASES_URL = "https://github.com/airdenmark/FFmpeg-Video-Audio-Downloader/releases/latest"
 
 # --- PORTABLE RESOURCE FINDER ---
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
@@ -51,8 +49,8 @@ ctk.set_default_color_theme("blue")
 class DownloaderApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("ffmpeg Video Downloader")
-        self.geometry("550x420") 
+        self.title("FFmpeg Video & Audio Downloader")
+        self.geometry("550x460") 
         
         # Set the window icon
         if os.path.exists(ICON_PATH):
@@ -67,6 +65,21 @@ class DownloaderApp(ctk.CTk):
         self.entry = ctk.CTkEntry(self, width=420, placeholder_text="https://...")
         self.entry.pack(pady=10)
         
+        # Format Dropdown Selector (Includes Native Audio & Transcoded MP3 Options)
+        self.format_var = ctk.StringVar(value="MP4 (Video)")
+        self.format_menu = ctk.CTkOptionMenu(
+            self,
+            values=[
+                "MP4 (Video)", 
+                "M4A (Best Native AAC)", 
+                "MP3 (Converted 320k)", 
+                "Opus (Raw WebM)"
+            ],
+            variable=self.format_var,
+            width=220
+        )
+        self.format_menu.pack(pady=(5, 5))
+        
         # Right-click context menu
         self.menu = Menu(self, tearoff=0)
         self.menu.add_command(label="Paste", command=self.paste_link)
@@ -74,7 +87,7 @@ class DownloaderApp(ctk.CTk):
 
         self.progress_bar = ctk.CTkProgressBar(self, width=420)
         self.progress_bar.set(0)
-        self.progress_bar.pack(pady=(20, 0))
+        self.progress_bar.pack(pady=(15, 0))
 
         self.status_label = ctk.CTkLabel(self, text="Ready to download", font=("Segoe UI", 12))
         self.status_label.pack(pady=(5, 10))
@@ -88,12 +101,12 @@ class DownloaderApp(ctk.CTk):
                                           state="disabled", width=220)
         self.folder_button.pack(pady=10)
 
-        # --- UPDATE NOTIFICATION LABEL ---
+        # Update Notification Label
         self.update_label = ctk.CTkLabel(self, text="", font=("Segoe UI", 12, "underline"), text_color="#3498db", cursor="hand2")
         self.update_label.pack(side="bottom", pady=(0, 15))
         self.update_label.bind("<Button-1>", lambda e: webbrowser.open(RELEASES_URL))
 
-        # --- VERSION LABEL (Discrete in the bottom right corner) ---
+        # Version Label
         self.version_label = ctk.CTkLabel(self, text=f"Version: {CURRENT_VERSION}", 
                                          font=("Segoe UI", 10), text_color="gray")
         self.version_label.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-10)
@@ -106,12 +119,22 @@ class DownloaderApp(ctk.CTk):
             req = urllib.request.Request(REPO_API_URL, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=5) as response:
                 data = json.loads(response.read().decode())
-                latest_version = data.get("tag_name", "")
+                latest_tag = data.get("tag_name", "").strip()
                 
-                if latest_version and latest_version != CURRENT_VERSION:
-                    self.after(0, lambda: self.update_label.configure(
-                        text=f"New update available ({latest_version}) Click here to download."
-                    ))
+                if latest_tag:
+                    # Parse version strings like "v1.1.2" into numeric tuples (1, 1, 2)
+                    def parse_version(v_str):
+                        clean_str = v_str.lstrip('vV')
+                        return tuple(map(int, clean_str.split('.')))
+
+                    latest_ver = parse_version(latest_tag)
+                    current_ver = parse_version(CURRENT_VERSION)
+
+                    # Only display prompt if the GitHub release version is strictly GREATER THAN current app version
+                    if latest_ver > current_ver:
+                        self.after(0, lambda: self.update_label.configure(
+                            text=f"New update available ({latest_tag}) Click here to download."
+                        ))
         except Exception:
             pass
 
@@ -137,19 +160,55 @@ class DownloaderApp(ctk.CTk):
         self.status_label.configure(text="Initializing...", text_color="white")
         self.folder_button.configure(state="disabled")
         
+        selected = self.format_var.get()
+
+        # Base yt-dlp arguments
         cmd = [
             YT_DLP_PATH,
             "--newline",
+            "-o", "%(title)s.%(ext)s",
             "--no-colors",
             "--ffmpeg-location", FFMPEG_PATH,
             "-P", self.download_dir,
-            "--merge-output-format", "mp4",
-            "--write-subs",
-            "--write-auto-subs",
-            "--convert-subs", "srt",
-            "--embed-subs",
-            url
         ]
+
+        # Format-specific flags
+        if selected == "M4A (Best Native AAC)":
+            # Direct stream extraction: Zero quality loss, native AAC container
+            cmd.extend([
+                "-f", "ba[ext=m4a]/ba",
+                "-x",
+                "--audio-format", "m4a"
+            ])
+
+        elif selected == "Opus (Raw WebM)":
+            # Direct stream extraction: Zero quality loss, native WebM container
+            cmd.extend([
+                "-f", "ba[ext=webm]/ba",
+                "-x",
+                "--audio-format", "opus"
+            ])
+
+        elif selected == "MP3 (Converted 320k)":
+            # Transcodes best available audio stream into 320kbps MP3
+            cmd.extend([
+                "-f", "bestaudio/best",
+                "-x",
+                "--audio-format", "mp3",
+                "--audio-quality", "0"
+            ])
+
+        else:
+            # Default: Full MP4 Video + Embedded Subtitles
+            cmd.extend([
+                "--merge-output-format", "mp4",
+                "--write-subs",
+                "--write-auto-subs",
+                "--convert-subs", "srt",
+                "--embed-subs",
+            ])
+
+        cmd.append(url)
         
         try:
             env = os.environ.copy()
