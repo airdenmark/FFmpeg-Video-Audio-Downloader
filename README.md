@@ -8,7 +8,7 @@ A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpe
 * **Flexible Audio & Video Formats:** 
   * **MP4 Video:** Full quality with auto-merged streams.
   * **M4A Audio:** Direct, native AAC audio stream extraction
-  * **MP3 Audio:** High-quality 320kbps conversion via FFmpeg.
+  * **MP3 Audio:** High-quality VBR (Variable Bitrate) conversion via FFmpeg using best available audio stream.
   * **Opus Audio:** Direct raw WebM stream extraction.
 * **Advanced Subtitles:** Automatically embeds subtitles into MP4 files and generates a separate `.srt` file for external use.
 * **Wide Support:** Powered by `yt-dlp`, supporting 1,000+ sites (YouTube, DRTV, ARTE, Vimeo, Soundcloud, etc.).
