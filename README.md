@@ -20,7 +20,7 @@ A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpe
 | :--- | :--- | :--- |
 | **Privacy** | Can track browsing history | **100% Private / Local** |
 | **FFmpeg Processing** | Usually requires extra install | **Fully Bundled** |
-| **Audio Extraction** | Often paywalled or low bitrate | **Native AAC & 320k MP3** |
+| **Audio Extraction** | Often paywalled or low bitrate | **Native AAC & MP3** |
 | **Subtitle Files** | Often hardcoded or ignored | **Embedded + Separate .srt** |
 | **Speed/Limits** | Often restricted for free users | **Unlimited & Free** |
 | **Site Support** | Varies by extension | **1000+ Sites (yt-dlp)** |
