@@ -11,7 +11,7 @@ import webbrowser
 from tkinter import Menu
 
 # --- APP INFO & UPDATER ---
-CURRENT_VERSION = "v1.2.0"
+CURRENT_VERSION = "v1.2.1"
 REPO_API_URL = "https://api.github.com/repos/airdenmark/FFmpeg-Video-Audio-Downloader/releases/latest"
 RELEASES_URL = "https://github.com/airdenmark/FFmpeg-Video-Audio-Downloader/releases/latest"
 
@@ -49,10 +49,13 @@ ctk.set_default_color_theme("blue")
 class DownloaderApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("FFmpeg Video & Audio Downloader")
+        self.title("FFmpeg Video Audio Downloader")
         self.geometry("550x460") 
         
-        # Set the window icon
+        # Track highest percentage reached during a single download pass
+        self._last_percent = 0.0
+        
+        # Set the window icon (Delay handles CustomTkinter initialization timing on Windows)
         if os.path.exists(ICON_PATH):
             self.after(200, lambda: self.iconbitmap(ICON_PATH))
         
@@ -72,7 +75,7 @@ class DownloaderApp(ctk.CTk):
             values=[
                 "MP4 (Video)", 
                 "M4A (Best Native AAC)", 
-                "MP3 (Converted 320k)", 
+                "MP3 (Best Available)", 
                 "Opus (Raw WebM)"
             ],
             variable=self.format_var,
@@ -156,9 +159,15 @@ class DownloaderApp(ctk.CTk):
             subprocess.Popen(["open" if platform.system() == "Darwin" else "xdg-open", self.download_dir])
 
     def run_download(self, url):
-        self.progress_bar.set(0)
-        self.status_label.configure(text="Initializing...", text_color="white")
-        self.folder_button.configure(state="disabled")
+        # Reset progress baseline for each new download
+        self._last_percent = 0.0
+
+        # Safely schedule UI initialization on the main thread
+        self.after(0, lambda: (
+            self.progress_bar.set(0),
+            self.status_label.configure(text="Initializing...", text_color="white"),
+            self.folder_button.configure(state="disabled")
+        ))
         
         selected = self.format_var.get()
 
@@ -189,8 +198,8 @@ class DownloaderApp(ctk.CTk):
                 "--audio-format", "opus"
             ])
 
-        elif selected == "MP3 (Converted 320k)":
-            # Transcodes best available audio stream into 320kbps MP3
+        elif selected == "MP3 (Best Available)":
+            # Transcodes best available audio stream into best available MP3 VBR
             cmd.extend([
                 "-f", "bestaudio/best",
                 "-x",
@@ -224,27 +233,40 @@ class DownloaderApp(ctk.CTk):
                 creationflags=0x08000000 
             )
 
-            for line in process.stdout:
-                match = re.search(r'(\d+\.\d+)%', line)
-                if match:
-                    percent = float(match.group(1))
-                    self.progress_bar.set(percent / 100)
-                    self.status_label.configure(text=f"Downloading: {percent}%")
+            if process.stdout:
+                for line in process.stdout:
+                    match = re.search(r'(\d+\.\d+)%', line)
+                    if match:
+                        percent = float(match.group(1))
+                        # Monotonic check: Only update UI if progress moves strictly forward
+                        if percent > self._last_percent:
+                            self._last_percent = percent
+                            self.after(0, lambda p=percent: (
+                                self.progress_bar.set(p / 100),
+                                self.status_label.configure(text=f"Downloading: {p}%")
+                            ))
 
             process.wait()
 
             if process.returncode == 0:
-                self.progress_bar.set(1)
-                self.status_label.configure(text="Download complete! ✔", text_color="#2ecc71")
-                self.folder_button.configure(state="normal")
+                self.after(0, lambda: (
+                    self.progress_bar.set(1),
+                    self.status_label.configure(text="Download complete! ✔", text_color="#2ecc71"),
+                    self.folder_button.configure(state="normal")
+                ))
             else:
-                self.status_label.configure(text="Download failed (check link)", text_color="#e74c3c")
+                self.after(0, lambda: self.status_label.configure(
+                    text="Download failed (check link)", text_color="#e74c3c"
+                ))
 
         except Exception as e:
-            self.status_label.configure(text=f"Error: {str(e)}", text_color="#e74c3c")
+            err_msg = str(e)
+            self.after(0, lambda: self.status_label.configure(
+                text=f"Error: {err_msg}", text_color="#e74c3c"
+            ))
         
         finally:
-            self.button.configure(state="normal", text="Download Now")
+            self.after(0, lambda: self.button.configure(state="normal", text="Download Now"))
 
     def start_thread(self):
         url = self.entry.get().strip()
