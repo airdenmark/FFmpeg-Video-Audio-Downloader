@@ -1,4 +1,4 @@
-# 🎬 FFmpeg Video & Audio Downloader
+# 🎬 FFmpeg Video Audio Downloader
 A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpeg`. Designed for high-quality video archiving with full subtitle support, as well as high-quality audio extraction.
 
 ![App Preview](app_preview.png)
@@ -27,7 +27,7 @@ A powerful, standalone GUI-based media downloader powered by `yt-dlp` and `FFmpe
 
 ## 📦 Installation & Usage
 1. Go to the [Latest Release](https://github.com/airdenmark/FFmpeg-Video-Audio-Downloader/releases/latest).
-2. Download the `.zip` file (e.g., `FFmpeg Video & Audio Downloader.v1.2.0.zip`).
+2. Download the `.zip` file (e.g., `FFmpeg.Video.Audio.Downloader.v1.x.x.zip`).
 3. Extract the contents to a folder of your choice.
 4. **Pro Tip:** Right-click the `.exe` file, select **Properties**, check the **Unblock** box at the bottom, and click **OK**. This prevents Windows from asking for permission every time you run the app.
 5. Run the `.exe` file, select your desired video/audio format, paste a link, and start downloading!
@@ -42,6 +42,6 @@ This application is compiled using the latest stable libraries to ensure maximum
 | Component | Version | Link |
 | :--- | :--- | :--- |
 | **yt-dlp** | 2026.08.19 | [View Project](https://github.com/yt-dlp/yt-dlp) |
-| **FFmpeg** | 2026-08-27-git-a6f573a1db | [gyan.dev Builds](https://www.gyan.dev/ffmpeg/builds/) |
+| **FFmpeg** | 2026-08-30-git-818cecc6e1 | [gyan.dev Builds](https://www.gyan.dev/ffmpeg/builds/) |
 | **Python** | 3.13 | [View Project](https://www.python.org/) |
 | **CustomTkinter** | v6.0.0 | [View Project](https://github.com/TomSchimansky/CustomTkinter) |
